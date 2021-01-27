@@ -35,7 +35,28 @@ NGINX y Apache son servidor web muy populares usados para ofrecer páginas web a
 <a name="esq"></a>
 ## 3.- Esquema de red
 
+Para esta tarea, tendremos un servidor virtual con dos tarjeta de red. Una en modo adaptador puente y otra en red interna. Acto seguido, iniciamos la máquina y seguimos el siguiente procedimiento:
 
+1.- Detenemos el servicio de NetworkManager
+```
+$ systemctl stop NetworkManager
+```
+2.- Deshabilidad el servicio de NetworkManager
+```
+$ systemctl disable NetworkManager
+```
+3.- Accedemos a /etc/network/interfaces y editamos el fichero para configurar nuestros dos adaptadores de forma estática, debería de quedar de una forma similar:
+
+![/img/4.png](/img/4.png)
+
+4.- Reiniciamos el servicio networking:
+```
+$ systemctl restart networking
+```
+
+5.- Si nos hemos tenido ningun problema, con el comando "ip a" veremos el resultado de la configuración:
+
+![/img/5.png](/img/5.png)
 
 <a name="ins"></a>
 ## 4.- Instalación
@@ -73,10 +94,40 @@ $ systemctl start nginx
 $ systemctl stop nginx
 ```
 ### Ficheros de configuración
+Aquí vamos a ver los ficheros y rutas mas importantes a la hora de configurar Nginx:
 
+- La ruta principal de Nginx es /etc/nginx/
+- La ruta de los sitios web esta en /var/www/html/
+- El fichero de configuración principal de Nginx se encuentra en /etc/nginx/nginx.conf. En este fichero podremos ajustar cosas como directivas del trafico de red, puertos de escucha o rutas de ficheros.
+- En la carpeta sites-available tenemos los sitios web disponibles.
+- En la carpeta sites-enabled tenemos los sitios web activados.
+- En la carpeta modules-available tenemos todos los modulos disponibles.
+- En la carpeta modules-enabled tenemos todos los modulos acivados.
 
+### Editar la página web por defecto
+Vamos a modificar la página web que se nos crea por defecto al instalar nginx:
+
+1.- Accedemos al directorio de lo sitios web, veremos que tenemos un documento .html.
+```
+cd /var/www/html
+```
+2.- Lo editamos
+```
+nano index.nginx-debian.html
+```
+3.- Veremos algo similar: 
+
+![/img/1.png](/img/1.png)
+
+4.- Procedemos a editar el fichero a nuestro gusto, en mi caso solo lo modificaré ligeramente:
+
+![/img/2.png](/img/2.png)
+
+5.- Recargamos la página de Nginx y veremos que se han aplicado los cambios:
+
+![/img/3.png](/img/3.png)
 
 <a name="ref"></a>
 ## 6.- Referencias
-- [DigitalOcean.com](https://www.digitalocean.com/)
-- [How to install dnsmasq on Debian 10](https://www.server-world.info/en/note?os=Debian_10&p=dnsmasq&f=1)
+- [www.digitalocean.com](https://www.digitalocean.com/)
+- [www.linode.com](https://www.linode.com/docs/guides/how-to-configure-nginx/)
