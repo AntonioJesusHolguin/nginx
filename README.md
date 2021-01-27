@@ -61,14 +61,31 @@ $ systemctl restart networking
 <a name="ins"></a>
 ## 4.- Instalación
 
+El proceso para instalar Nginx es muy sencillo, sigamos los siguientes comandos para ello:
 
+1.- Actualizamos los repositorios:
+```
+$ apt update
+```
+2.- Instalamos Nginx
+```
+$ apt install nginx
+```
+3.- Comprobamos el estado del servicio Nginx:
+```
+$ systemctl status nginx
+```
 
 <a name="cas"></a>
 ## 5.- Casos prácticos
 
 ### Versión usada de Nginx
-La versión que vamos a usar en estre proyecto de Nginx es la 1.14.2.
 
+Con este comando podemos saber la versión que estamos usado de Nginx:
+```
+nginx -v
+```
+Como podemos ver, la versión de Nginx actual es la 1.14.2.
 ### Servicio asociado
 
 En este apartado vamos a ver como trabajar con el servicio de Nginx:
@@ -127,7 +144,80 @@ nano index.nginx-debian.html
 
 ![/img/3.png](/img/3.png)
 
+### Virtual Hosting
+
+Vamos a proceder a crear nuestro sitio web y a acceder a él usando un nombre. Sigamos los siguientes pasos para ello:
+
+1.- Creamos un directorio dentro de /var/www/html
+```
+$ sudo mkdir /var/www/html/pagina1.org
+```
+2.- Le damos los siguientes permisos:
+```
+$ chown -R www-data:www-data pagina1.org
+```
+3.- Creamos un archivo index.html y escribimos el siguiente código:
+```
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bienvenidos a Nginx!</title>
+<style>
+    body {
+        width: 35em;
+        margin: 0 auto;
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+</style>
+</head>
+<body>
+<h1>Bienvenidos a Nginx!</h1>
+<p>Antonio J. Holguin.</p>
+<p><em>Esta es la pagina 1</em></p>
+</body>
+</html>
+```
+4.- Vamos a crear nuestro nuevo servidor virtual, para ello accedemos a /etc/nginx/sites-available y copiamos el fichero "default" con el nombre "pagina1.conf". Acto seguido abrimos el nuevo fichero y lo editamos de la siguiente forma:
+```
+server {
+        listen 80;
+        listen [::]:80;
+
+        server_name pagina1.org;
+
+        root /var/www/html/pagina1.org;
+        index index.html;
+
+        location / {
+                try_files $uri $uri/ =404;
+        }
+
+        access_log /var/log/nginx/pagina1.org-access.log;
+        error_log /var/log/nginx/pagina1.org-error.log;
+}
+```
+5.- Copiamos el archivo a sites-enabled:
+```
+$ sudo ln -s /etc/nginx/sites-available/pagina1.conf /etc/nginx/sites-enabled/
+```
+6.- Reiniciamos el servicio Nginx:
+```
+$ sudo systemctl restart nginx
+```
+7.- Si todo ha ido bien, si escribimos pagina1.org en nuestro buscador nos aparecerá nuestra página web:
+
+![/img/6.png](/img/6.png)
+
+### Autorización
+
+
+
+### SSL/TLS
+
+
+
 <a name="ref"></a>
 ## 6.- Referencias
 - [www.digitalocean.com](https://www.digitalocean.com/)
 - [www.linode.com](https://www.linode.com/docs/guides/how-to-configure-nginx/)
+- [www.chachocool.com](https://chachocool.com/como-instalar-nginx-en-debian-10-buster/#Como_configurar_Nginx_en_Debian_10)
