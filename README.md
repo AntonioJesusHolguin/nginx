@@ -146,17 +146,19 @@ nano index.nginx-debian.html
 
 ### Virtual Hosting
 
-Vamos a proceder a crear nuestro sitio web y a acceder a él usando un nombre. Sigamos los siguientes pasos para ello:
+Vamos a proceder a crear dos sitios web y a acceder a ellos usando nombres. Sigamos los siguientes pasos para ello:
 
-1.- Creamos un directorio dentro de /var/www/html
+1.- Creamos los directorio dentro de /var/www/html
 ```
-$ sudo mkdir /var/www/html/pagina1.org
+$ sudo mkdir /var/www/html/web1.org
+$ sudo mkdir /var/www/html/web2.org
 ```
 2.- Le damos los siguientes permisos:
 ```
-$ chown -R www-data:www-data pagina1.org
+$ chown -R www-data:www-data web1.org
+$ chown -R www-data:www-data web2.org
 ```
-3.- Creamos un archivo index.html y escribimos el siguiente código:
+3.- Creamos un archivo index.html en ambas carpetas y escribimos un código similar a este:
 ```
 <!DOCTYPE html>
 <html>
@@ -173,38 +175,39 @@ $ chown -R www-data:www-data pagina1.org
 <body>
 <h1>Bienvenidos a Nginx!</h1>
 <p>Antonio J. Holguin.</p>
-<p><em>Esta es la pagina 1</em></p>
+<p><em>Esta es la web 1</em></p>
 </body>
 </html>
 ```
-4.- Vamos a crear nuestro nuevo servidor virtual, para ello accedemos a /etc/nginx/sites-available y copiamos el fichero "default" con el nombre "pagina1.conf". Acto seguido abrimos el nuevo fichero y lo editamos de la siguiente forma:
+4.- Vamos a crear nuestros nuevos servidores virtuales, para ello accedemos a /etc/nginx/sites-available y copiamos el fichero "default" con el nombre "web1.conf" y "web2.conf". Acto seguido abrimos el nuevo fichero y lo editamos de la siguiente forma:
 ```
 server {
         listen 80;
         listen [::]:80;
 
-        server_name pagina1.org;
+        server_name www.web1.org;
 
-        root /var/www/html/pagina1.org;
+        root /var/www/web1.org;
         index index.html;
 
         location / {
                 try_files $uri $uri/ =404;
         }
 
-        access_log /var/log/nginx/pagina1.org-access.log;
-        error_log /var/log/nginx/pagina1.org-error.log;
+        access_log /var/log/nginx/web1.org-access.log;
+        error_log /var/log/nginx/web1.org-error.log;
 }
 ```
-5.- Copiamos el archivo a sites-enabled:
+5.- Copiamos los archivos a sites-enabled:
 ```
-$ sudo ln -s /etc/nginx/sites-available/pagina1.conf /etc/nginx/sites-enabled/
+$ sudo ln -s /etc/nginx/sites-available/web1.conf /etc/nginx/sites-enabled/
+$ sudo ln -s /etc/nginx/sites-available/web2.conf /etc/nginx/sites-enabled/
 ```
 6.- Reiniciamos el servicio Nginx:
 ```
 $ sudo systemctl restart nginx
 ```
-7.- Si todo ha ido bien, si escribimos pagina1.org en nuestro buscador nos aparecerá nuestra página web:
+7.- Si todo ha ido bien, si escribimos www.web1.org o www.web2.org en nuestro buscador nos apareceran nuestras páginas web:
 
 ![/img/6.png](/img/6.png)
 
