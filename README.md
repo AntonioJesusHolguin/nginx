@@ -209,7 +209,7 @@ $ sudo systemctl restart nginx
 ```
 7.- Si todo ha ido bien, si escribimos www.web1.org o www.web2.org en nuestro buscador nos apareceran nuestras páginas web:
 
-![/img/6.png](/img/6.png)
+![/img/7.png](/img/7.png)
 
 ### Autorización
 
