@@ -150,13 +150,13 @@ Vamos a proceder a crear dos sitios web y a acceder a ellos usando nombres. Siga
 
 1.- Creamos los directorio dentro de /var/www/html
 ```
-$ sudo mkdir /var/www/html/web1.org
-$ sudo mkdir /var/www/html/web2.org
+$ sudo mkdir /var/www/html/web1
+$ sudo mkdir /var/www/html/web2
 ```
 2.- Le damos los siguientes permisos:
 ```
-$ chown -R www-data:www-data web1.org
-$ chown -R www-data:www-data web2.org
+$ chown -R www-data:www-data web1
+$ chown -R www-data:www-data web2
 ```
 3.- Creamos un archivo index.html en ambas carpetas y escribimos un código similar a este:
 ```
@@ -187,7 +187,7 @@ server {
 
         server_name www.web1.org;
 
-        root /var/www/web1.org;
+        root /var/www/web1;
         index index.html;
 
         location / {
@@ -198,16 +198,59 @@ server {
         error_log /var/log/nginx/web1.org-error.log;
 }
 ```
-5.- Copiamos los archivos a sites-enabled:
+5.- Acto seguido, vamos a limitar que rango de IPs pueden acceder a ambos sitios web. Para www.web1.org permitiremos únicamente las redes 192.168.2.0 y 192.168.3.0:
+```
+server {
+        listen 80;
+        listen [::]:80;
+
+        server_name www.web1.org;
+
+        root /var/www/web1;
+        index index.html;
+
+        location / {
+                try_files $uri $uri/ =404;
+                allow 192.168.3.0/24;
+                allow 192.168.2.0/24;
+                deny all;
+        }
+
+        access_log /var/log/nginx/web1.org-access.log;
+        error_log /var/log/nginx/web1.org-error.log;
+}
+```
+En el caso de www.web2.org, solo le permitiremos que accedan equipos de 192.168.3.0:
+```
+server {
+        listen 80;
+        listen [::]:80;
+
+        server_name www.web2;
+
+        root /var/www/web2;
+        index index.html;
+
+        location / {
+                try_files $uri $uri/ =404;
+                allow 192.168.3.0/24;
+                deny all;
+        }
+
+        access_log /var/log/nginx/web2org-access.log;
+        error_log /var/log/nginx/web2org-error.log;
+}
+```
+6.- Copiamos los archivos a sites-enabled:
 ```
 $ sudo ln -s /etc/nginx/sites-available/web1.conf /etc/nginx/sites-enabled/
 $ sudo ln -s /etc/nginx/sites-available/web2.conf /etc/nginx/sites-enabled/
 ```
-6.- Reiniciamos el servicio Nginx:
+7.- Reiniciamos el servicio Nginx:
 ```
 $ sudo systemctl restart nginx
 ```
-7.- Si todo ha ido bien, si escribimos www.web1.org o www.web2.org en nuestro buscador nos apareceran nuestras páginas web:
+8.- Si todo ha ido bien, si escribimos www.web1.org o www.web2.org en nuestro buscador nos apareceran nuestras páginas web:
 
 ![/img/7.png](/img/7.png)
 
