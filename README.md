@@ -260,7 +260,48 @@ $ sudo systemctl restart nginx
 
 ### SSL/TLS
 
+Vamos a crear un certificado SSL para poder acceder a nuestro sitio web de forma segura. Tendremos que seguir los siguientes pasos para ello:
 
+1.- Generamos una clave usando la herramienta openssl, la instalamos con apt:
+```
+$ apt install openssl
+```
+2.- Creamos una clave con el siguiente comando:
+```
+$ openssl genrsa -out web1.key 2048
+```
+3.- A continuación generamos un certificado:
+```
+$ openssl req -new -key web1.key web1.csr
+```
+4.- Vamos a firmar el certificado siguiendo los pasos que el comando nos irá indicando:
+```
+$ openssl x509 -days 365 -in web1.csr -signkey web1.key -out web1.crt
+```
+5.- Una vez hecho eso, entramos en /etc/nginx/sites-enabled y copiamos el fichero de configuración de nuestro sitio web con un nuevo nombre (web1.conf -> web1-ssl.conf). Acto seguido editamos el nuevo fichero con la siguiente configuración:
+```
+server {
+        listen  443 ssl;
+
+        server_name www.web1.org;
+        ssl_certificate         /etc/nginx/claves/web1.crt;
+        ssl_certificate_key     /etc/nginx/claves/web1.key;
+        ssl_protocols           TLSv1 TLSv1.1 TLSv1.2;
+        ssl_ciphers             HIGH:!aNULL:!MD5;
+        ...
+}
+```
+6.- Guardamos la configuración y reniciamos nginx:
+```
+$ systemctl restart nginx
+```
+7.- Ahora podremos acceder a nuestro sitio web con https, nuestro navegador nos indicará que el sitio web no es seguro:
+
+![/img/8.png](/img/8.png)
+
+8.- Si continuamos y accedemos al sitio web veremos los siguiente:
+
+![/img/9.png](/img/9.png)
 
 <a name="ref"></a>
 ## 6.- Referencias
