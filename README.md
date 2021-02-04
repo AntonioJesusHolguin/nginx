@@ -256,6 +256,65 @@ $ sudo systemctl restart nginx
 
 ### Autorización
 
+Una parte de vital importancia de Nginx es la autorización, en esta práctica vamos a crear una carpeta dentro de nuestro sitio web que requerirá a los usuarios loguearse:
+
+1.- Vamos a crear una carpeta llamada "privado" en /var/www/web1/:
+```
+$ cd /var/www/web1
+$ mkdir privado
+```
+2.- Vamos a la carpeta principal de Nginx para crear el documento que contendrá las credenciales, es decir, los usuarios y sus contraseñas:
+```
+$ cd /etc/nginx/
+```
+3.- Para crear el documento debemos de ejecutar el siguiente comando:
+```
+$ htpasswd -c -m htpasswd user1
+```
+4.- 
+
+5.- Tras crear el documento, vamos a la carpeta sites-available y editamos el documento web1.conf, de forma que tenga lo siguiente:
+```
+server {
+	listen 80;
+	listen [::]:80;
+	
+	server_name www.web1.org;
+	
+	location / {
+		root /var/www/web1/;
+		index index.html;
+		try_files $uri $uri/ =404;
+	
+		access_log /var/log/nginx/web1.org-access.log;
+		error_log /var/log/nginx/web1.org-error.log;
+	}
+	location /privado {
+		auth_basic		"Acceso restingido, requiere autorización";
+		auth_basic_user_file	/etc/nginx/htpasswd;
+	}
+}
+```
+6.- Reiniciamos Nginx:
+```
+$ systemctl restart nginx
+```
+7.- Vamos a nuestro navegador e intentamos acceder a la carpeta privado en web1:
+
+![/img/10.png](/img/10.png)
+
+8.- Es posible permitir este metodo de autorización para una red y negar cualquier intento de conexión de otra, para ello lo único que debemos de añadir es lo siguiente en el documento anterior:
+```
+location /privado {
+  satisfy any;
+  deny all;
+  allow 192.168.3.0/24;
+}
+```
+9.- Reiniciamos Nginx:
+```
+$ systemctl restart nginx
+```
 
 
 ### SSL/TLS
