@@ -271,7 +271,9 @@ $ cd /etc/nginx/
 ```
 $ htpasswd -c -m htpasswd user1
 ```
-4.- 
+4.- Si echamos un vistazo al documento, veremos el nombre de usuario acompañado de la contraseña la cual esta encriptada:
+
+![/img/11.png](/img/11.png)
 
 5.- Tras crear el documento, vamos a la carpeta sites-available y editamos el documento web1.conf, de forma que tenga lo siguiente:
 ```
@@ -315,7 +317,11 @@ location /privado {
 ```
 $ systemctl restart nginx
 ```
+10.- Comprobemos los resultados si entramos por la red 192.168.2.0 y la red 192.168.3.0:
 
+![/img/12.png](/img/12.png)
+
+![/img/12.png](/img/12.png)
 
 ### SSL/TLS
 
